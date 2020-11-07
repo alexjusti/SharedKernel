@@ -4,37 +4,34 @@ using FluentValidation.Results;
 
 namespace SharedKernel.Common
 {
-    public class ActionResult<TResult>
+    public class ActionResult
     {
         public bool Success { get; set; }
-
-        public TResult Result { get; set; }
 
         public IEnumerable<ApplicationError> ApplicationErrors { get; set; }
 
         public IEnumerable<ValidationError> ValidationErrors { get; set; }
 
-        public static ActionResult<TResult> SuccessResult(TResult result)
+        public static ActionResult SuccessResult()
         {
-            return new ActionResult<TResult>
+            return new ActionResult
             {
-                Success = true,
-                Result = result
+                Success = true
             };
         }
 
-        public static ActionResult<TResult> ApplicationFailureResult(IEnumerable<ApplicationError> applicationErrors)
+        public static ActionResult ApplicationFailureResult(IEnumerable<ApplicationError> applicationErrors)
         {
-            return new ActionResult<TResult>
+            return new ActionResult
             {
                 Success = false,
                 ApplicationErrors = applicationErrors
             };
         }
 
-        public static ActionResult<TResult> ValidationFailureResult(ValidationResult validationResult)
+        public static ActionResult ValidationFailureResult(ValidationResult validationResult)
         {
-            return new ActionResult<TResult>
+            return new ActionResult
             {
                 Success = false,
                 ValidationErrors = validationResult.Errors.Select(error => new ValidationError
@@ -42,6 +39,26 @@ namespace SharedKernel.Common
                     Property = error.PropertyName,
                     Message = error.ErrorMessage
                 })
+            };
+        }
+
+        public static ActionResult ApplicationFailureResult(ApplicationError applicationError)
+        {
+            return ApplicationFailureResult(new[] { applicationError });
+        }
+    }
+
+    public class ActionResult<TResult>
+        : ActionResult
+    {
+        public TResult Result { get; set; }
+
+        public static ActionResult<TResult> SuccessResult(TResult result)
+        {
+            return new ActionResult<TResult>
+            {
+                Success = true,
+                Result = result
             };
         }
     }
