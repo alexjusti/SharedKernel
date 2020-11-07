@@ -11,7 +11,7 @@ namespace SharedKernel.Data
     public interface IRepository<TEntity>
         where TEntity : Entity
     {
-        Task<ActionResult<Entity>> AddAsync(TEntity entity);
+        Task<ActionResult<TEntity>> AddAsync(TEntity entity);
 
         Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter);
 
