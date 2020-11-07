@@ -33,6 +33,8 @@ namespace SharedKernel.Identity
             if (usernameTaken)
                 return (ActionResult<TUser>) ActionResult.ApplicationFailureResult(UserManagerErrors.UsernameTaken);
 
+            user.Password = _passwordHasher.HashPassword(user.Password);
+
             var add = await _userRepository.AddAsync(user);
 
             return add;
