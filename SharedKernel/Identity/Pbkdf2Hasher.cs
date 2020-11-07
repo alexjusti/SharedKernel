@@ -20,7 +20,7 @@ namespace SharedKernel.Identity
             KeyLength = keyLength;
         }
 
-        private byte[] GenerateKey(string password, byte[] salt, int iterationCount, int keyLength)
+        private static byte[] GenerateKey(string password, byte[] salt, int iterationCount, int keyLength)
         {
             var hasher = new Rfc2898DeriveBytes(password, salt, iterationCount, HashAlgorithmName.SHA512);
 
