@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Buffers.Text;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 
-namespace SharedKernel.Identity
+namespace SharedKernel.Identity.Security
 {
     public class Pbkdf2Hasher : IPasswordHasher
     {

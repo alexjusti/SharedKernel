@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace SharedKernel.Identity
+﻿namespace SharedKernel.Identity.Security
 {
     public interface IPasswordHasher
     {

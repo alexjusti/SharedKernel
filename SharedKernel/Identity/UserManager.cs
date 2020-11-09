@@ -5,6 +5,7 @@ using MongoDB.Entities;
 using SharedKernel.Common;
 using SharedKernel.Data;
 using SharedKernel.Identity.Dtos;
+using SharedKernel.Identity.Security;
 
 namespace SharedKernel.Identity
 {
