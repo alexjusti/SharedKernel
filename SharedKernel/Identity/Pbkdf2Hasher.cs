@@ -29,7 +29,7 @@ namespace SharedKernel.Identity
 
         public string HashPassword(string password)
         {
-            var salt = new byte[16];
+            var salt = new byte[SaltLength];
 
             var key = GenerateKey(password, salt, IterationCount, KeyLength);
 
