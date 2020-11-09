@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MongoDB.Entities;
 using SharedKernel.Common;
 using SharedKernel.Data;
+using SharedKernel.Identity.Dtos;
 
 namespace SharedKernel.Identity
 {
@@ -69,32 +70,40 @@ namespace SharedKernel.Identity
                 : ActionResult<TUser>.SuccessResult(user));
         }
 
-        public async Task<ActionResult> VerifyUserPasswordByEmailAsync(string email, string passwordAttempt)
+        protected ActionResult VerifyUserPassword(TUser user, string passwordAttempt)
         {
-            var getUser = await GetUserByEmailAsync(email);
-
-            if (!getUser.Success)
-                return getUser;
-
-            var verifyPassword = _passwordHasher.VerifyPassword(getUser.Result.Password, passwordAttempt);
+            var verifyPassword = _passwordHasher.VerifyPassword(user.Password, passwordAttempt);
 
             return verifyPassword
                 ? ActionResult.SuccessResult()
                 : ActionResult.ApplicationFailureResult(UserManagerErrors.PasswordInvalid);
         }
 
+        public async Task<ActionResult> VerifyUserPasswordByIdAsync(string id, string passwordAttempt)
+        {
+            var getUser = await GetUserByIdAsync(id);
+
+            return getUser.Success
+                ? VerifyUserPassword(getUser.Result, passwordAttempt)
+                : getUser;
+        }
+
+        public async Task<ActionResult> VerifyUserPasswordByEmailAsync(string email, string passwordAttempt)
+        {
+            var getUser = await GetUserByEmailAsync(email);
+
+            return getUser.Success
+                ? VerifyUserPassword(getUser.Result, passwordAttempt)
+                : getUser;
+        }
+
         public async Task<ActionResult> VerifyUserPasswordByUsernameAsync(string username, string passwordAttempt)
         {
             var getUser = await GetUserByUsernameAsync(username);
 
-            if (!getUser.Success)
-                return getUser;
-
-            var verifyPassowrd = _passwordHasher.VerifyPassword(getUser.Result.Password, passwordAttempt);
-
-            return verifyPassowrd
-                ? ActionResult.SuccessResult()
-                : ActionResult.ApplicationFailureResult(UserManagerErrors.PasswordInvalid);
+            return getUser.Success
+                ? VerifyUserPassword(getUser.Result, passwordAttempt)
+                : getUser;
         }
 
         public async Task<ActionResult<TUser>> UpdateUserAsync(TUser user)
@@ -102,6 +111,23 @@ namespace SharedKernel.Identity
             var update = await _userRepository.UpdateAsync(user);
 
             return update;
+        }
+
+        public async Task<ActionResult> ChangeUserPasswordAsync(ChangePasswordDto changePasswordDto)
+        {
+            var getUser = await GetUserByIdAsync(changePasswordDto.UserId);
+
+            if (!getUser.Success)
+                return getUser;
+
+            var verifyPassword = VerifyUserPassword(getUser.Result, changePasswordDto.CurrentPassword);
+
+            if (!verifyPassword.Success)
+                return verifyPassword;
+
+            getUser.Result.Password = _passwordHasher.HashPassword(changePasswordDto.NewPassword);
+
+            return await UpdateUserAsync(getUser.Result);
         }
 
         public async Task<ActionResult> DeleteUserAsync(string id)

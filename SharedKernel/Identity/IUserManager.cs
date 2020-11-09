@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using SharedKernel.Common;
+using SharedKernel.Identity.Dtos;
 
 namespace SharedKernel.Identity
 {
@@ -15,11 +16,15 @@ namespace SharedKernel.Identity
 
         Task<ActionResult<TUser>> GetUserByUsernameAsync(string username);
 
+        Task<ActionResult> VerifyUserPasswordByIdAsync(string id, string passwordAttempt);
+
         Task<ActionResult> VerifyUserPasswordByEmailAsync(string email, string passwordAttempt);
 
         Task<ActionResult> VerifyUserPasswordByUsernameAsync(string username, string passwordAttempt);
 
         Task<ActionResult<TUser>> UpdateUserAsync(TUser user);
+
+        Task<ActionResult> ChangeUserPasswordAsync(ChangePasswordDto changePasswordDto);
 
         Task<ActionResult> DeleteUserAsync(string id);
     }
