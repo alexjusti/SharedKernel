@@ -5,11 +5,11 @@ namespace SharedKernel.Identity.Security
 {
     public class Pbkdf2Hasher : IPasswordHasher
     {
-        private int SaltLength { get; set; }
+        private int SaltLength { get; }
 
-        private int IterationCount { get; set; }
+        private int IterationCount { get; }
 
-        private int KeyLength { get; set; }
+        private int KeyLength { get; }
 
         public Pbkdf2Hasher(int saltLength, int iterationCount, int keyLength)
         {
