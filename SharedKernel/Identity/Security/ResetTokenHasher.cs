@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using SharedKernel.Common;
-using SharedKernel.Common.Clock;
 
 namespace SharedKernel.Identity.Security
 {

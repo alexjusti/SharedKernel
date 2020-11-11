@@ -4,7 +4,7 @@ namespace SharedKernel.Identity.Security
 {
     public interface IResetTokenHasher
     {
-        string GenerateHash(TimeSpan duration);
+        string GenerateHash();
 
         bool VerifyHash(string resetToken, string resetTokenAttempt);
     }
