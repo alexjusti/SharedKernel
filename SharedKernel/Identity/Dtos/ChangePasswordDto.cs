@@ -1,6 +1,6 @@
 ﻿namespace SharedKernel.Identity.Dtos
 {
-    public abstract class ChangePasswordDto
+    public class ChangePasswordDto
     {
         public string UserId { get; set; }
 
