@@ -17,10 +17,16 @@ namespace SharedKernel.Identity
 
         private readonly IPasswordHasher _passwordHasher;
 
-        public UserManager(IRepository<TUser> userRepository, IPasswordHasher passwordHasher)
+        private readonly IResetTokenProvider _resetTokenProvider;
+
+        public UserManager(
+            IRepository<TUser> userRepository,
+            IPasswordHasher passwordHasher,
+            IResetTokenProvider resetTokenProvider)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
+            _resetTokenProvider = resetTokenProvider;
         }
 
         public async Task<ActionResult<TUser>> AddUserAsync(TUser user)
@@ -131,6 +137,46 @@ namespace SharedKernel.Identity
             return await UpdateUserAsync(getUser.Result);
         }
 
+        public async Task<ActionResult<string>> GeneratePasswordResetTokenAsync(string id)
+        {
+            var getUser = await GetUserByIdAsync(id);
+
+            //TODO: Investigate this
+            if (!getUser.Success)
+                return getUser as ActionResult<string>;
+
+            var resetToken = _resetTokenProvider.GenerateToken();
+
+            var resetTokenHash = _resetTokenProvider.GenerateHash(resetToken);
+
+            getUser.Result.PasswordResetToken = resetTokenHash;
+
+            return ActionResult<string>.SuccessResult(resetToken);
+        }
+
+        public async Task<ActionResult> AttemptPasswordResetAsync(AttemptPasswordResetDto attemptPasswordResetDto)
+        {
+            var getUser = await GetUserByIdAsync(attemptPasswordResetDto.UserId);
+
+            if (!getUser.Success)
+                return getUser;
+
+            var verifyPasswordResetToken = _resetTokenProvider.VerifyHash(
+                getUser.Result.PasswordResetToken,
+                attemptPasswordResetDto.PasswordResetToken);
+
+            if (!verifyPasswordResetToken)
+                return ActionResult.ApplicationFailureResult(UserManagerErrors.PasswordResetTokenInvalid);
+
+            var newPasswordHash = _passwordHasher.HashPassword(attemptPasswordResetDto.NewPassword);
+
+            getUser.Result.Password = newPasswordHash;
+
+            var updateUser = await UpdateUserAsync(getUser.Result);
+
+            return updateUser;
+        }
+
         public async Task<ActionResult> DeleteUserAsync(string id)
         {
             var delete = await _userRepository.DeleteAsync(id);
@@ -163,6 +209,12 @@ namespace SharedKernel.Identity
         {
             Code = "PasswordInvalid",
             Message = "The password provided is invalid."
+        };
+
+        public static ApplicationError PasswordResetTokenInvalid => new ApplicationError
+        {
+            Code = "PasswordResetTokenInvalid",
+            Message = "The password reset token provided is not a valid password reset token"
         };
     }
 }

@@ -75,6 +75,20 @@ namespace SharedKernel.Identity
         Task<ActionResult> ChangeUserPasswordAsync(ChangePasswordDto changePasswordDto);
 
         /// <summary>
+        /// Generate a password reset token and save it to the user's record
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<ActionResult<string>> GeneratePasswordResetTokenAsync(string id);
+
+        /// <summary>
+        /// Attempt a password reset using a password reset token
+        /// </summary>
+        /// <param name="attemptPasswordResetDto"></param>
+        /// <returns></returns>
+        Task<ActionResult> AttemptPasswordResetAsync(AttemptPasswordResetDto attemptPasswordResetDto);
+
+        /// <summary>
         /// Delete a user from the database
         /// </summary>
         /// <param name="id"></param>
