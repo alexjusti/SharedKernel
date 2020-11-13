@@ -12,5 +12,7 @@ namespace SharedKernel.Identity
         public string Password { get; set; }
 
         public string PasswordResetToken { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }

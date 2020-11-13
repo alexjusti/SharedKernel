@@ -120,19 +120,19 @@ namespace SharedKernel.Identity
             return update;
         }
 
-        public async Task<ActionResult> ChangeUserPasswordAsync(ChangePasswordDto changePasswordDto)
+        public async Task<ActionResult> ChangeUserPasswordAsync(ChangePasswordDto dto)
         {
-            var getUser = await GetUserByIdAsync(changePasswordDto.UserId);
+            var getUser = await GetUserByIdAsync(dto.UserId);
 
             if (!getUser.Success)
                 return getUser;
 
-            var verifyPassword = VerifyUserPassword(getUser.Result, changePasswordDto.CurrentPassword);
+            var verifyPassword = VerifyUserPassword(getUser.Result, dto.CurrentPassword);
 
             if (!verifyPassword.Success)
                 return verifyPassword;
 
-            getUser.Result.Password = _passwordHasher.HashPassword(changePasswordDto.NewPassword);
+            getUser.Result.Password = _passwordHasher.HashPassword(dto.NewPassword);
 
             return await UpdateUserAsync(getUser.Result);
         }
@@ -177,11 +177,18 @@ namespace SharedKernel.Identity
             return updateUser;
         }
 
-        public async Task<ActionResult> DeleteUserAsync(string id)
+        public async Task<ActionResult> DeactivateUserAsync(string id)
         {
-            var delete = await _userRepository.DeleteAsync(id);
+            var getUser = await GetUserByIdAsync(id);
 
-            return delete;
+            if (!getUser.Success)
+                return getUser;
+
+            getUser.Result.IsActive = false;
+
+            var updateUser = await UpdateUserAsync(getUser.Result);
+
+            return updateUser;
         }
     }
 
