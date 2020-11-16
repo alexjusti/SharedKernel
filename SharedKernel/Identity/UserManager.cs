@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using MongoDB.Entities;
 using SharedKernel.Common;
 using SharedKernel.Data;
 using SharedKernel.Identity.Dtos;

@@ -4,7 +4,6 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MongoDB.Entities;
 using SharedKernel.Common;
-using SharedKernel.Identity;
 
 namespace SharedKernel.Data
 {

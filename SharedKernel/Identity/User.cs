@@ -1,5 +1,4 @@
 ﻿using MongoDB.Entities;
-using SharedKernel.Data;
 
 namespace SharedKernel.Identity
 {

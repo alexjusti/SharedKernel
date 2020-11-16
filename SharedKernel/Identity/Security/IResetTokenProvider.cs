@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SharedKernel.Identity.Security
+﻿namespace SharedKernel.Identity.Security
 {
     public interface IResetTokenProvider
     {
