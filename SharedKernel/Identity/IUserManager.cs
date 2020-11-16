@@ -68,14 +68,30 @@ namespace SharedKernel.Identity
         Task<ActionResult<TUser>> UpdateUserAsync(TUser user);
 
         /// <summary>
-        /// Attempt to change the user's password
+        /// Attempt to change a user's email
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        Task<ActionResult> ChangeUserEmailAsync(string id, ChangeEmailDto dto);
+
+        /// <summary>
+        /// Attempt to change a user's username
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        Task<ActionResult> ChangeUserUsernameAsync(string id, ChangeUsernameDto dto);
+
+        /// <summary>
+        /// Attempt to change a user's password
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
         Task<ActionResult> ChangeUserPasswordAsync(ChangePasswordDto dto);
 
         /// <summary>
-        /// Generate a password reset token and save it to the user's record
+        /// Generate a password reset token and save it to a user's record
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>

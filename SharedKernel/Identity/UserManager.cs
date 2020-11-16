@@ -120,6 +120,44 @@ namespace SharedKernel.Identity
             return update;
         }
 
+        public async Task<ActionResult> ChangeUserEmailAsync(string id, ChangeEmailDto dto)
+        {
+            var getUser = await GetUserByIdAsync(id);
+
+            if (!getUser.Success)
+                return getUser;
+
+            var emailAlreadyExists =
+                await _userRepository.ExistsAsync(u =>
+                    string.Equals(u.Email, dto.NewEmail, StringComparison.CurrentCultureIgnoreCase));
+
+            if (emailAlreadyExists)
+                return ActionResult.ApplicationFailureResult(UserManagerErrors.EmailTaken);
+
+            getUser.Result.Email = dto.NewEmail;
+
+            return await UpdateUserAsync(getUser.Result);
+        }
+
+        public async Task<ActionResult> ChangeUserUsernameAsync(string id, ChangeUsernameDto dto)
+        {
+            var getUser = await GetUserByIdAsync(id);
+
+            if (!getUser.Success)
+                return getUser;
+
+            var usernameAlreadyExists =
+                await _userRepository.ExistsAsync(u =>
+                    string.Equals(u.Username, dto.NewUsername, StringComparison.CurrentCultureIgnoreCase));
+
+            if (usernameAlreadyExists)
+                return ActionResult.ApplicationFailureResult(UserManagerErrors.UsernameTaken);
+
+            getUser.Result.Username = dto.NewUsername;
+
+            return await UpdateUserAsync(getUser.Result);
+        }
+
         public async Task<ActionResult> ChangeUserPasswordAsync(ChangePasswordDto dto)
         {
             var getUser = await GetUserByIdAsync(dto.UserId);
