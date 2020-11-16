@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using SharedKernel.Common;
 
 namespace SharedKernel.Identity.Security
 {
@@ -27,7 +26,7 @@ namespace SharedKernel.Identity.Security
 
             for (var i = 0; i < token.Length; i++)
             {
-                var charType = random.Next(1, 3);
+                var charType = random.Next(1, 4);
 
                 token[i] = charType switch
                 {
