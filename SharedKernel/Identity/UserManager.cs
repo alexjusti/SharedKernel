@@ -189,6 +189,11 @@ namespace SharedKernel.Identity
 
             getUser.Result.PasswordResetToken = resetTokenHash;
 
+            var updateUser = await UpdateUserAsync(getUser.Result);
+
+            if (!updateUser.Success)
+                return updateUser as ActionResult<string>;
+
             return ActionResult<string>.SuccessResult(resetToken);
         }
 
