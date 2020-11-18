@@ -3,19 +3,22 @@ using System.Security.Cryptography;
 
 namespace SharedKernel.Identity.Security
 {
+    public class PasswordHasherOptions
+    {
+        public int SaltLength { get; set; } = 16;
+
+        public int IterationCount { get; set; } = 10000;
+
+        public int KeyLength { get; set; } = 32;
+    }
+
     public class PasswordHasher : IPasswordHasher
     {
-        private int SaltLength { get; }
+        private readonly PasswordHasherOptions _options;
 
-        private int IterationCount { get; }
-
-        private int KeyLength { get; }
-
-        public PasswordHasher(int saltLength, int iterationCount, int keyLength)
+        public PasswordHasher(PasswordHasherOptions options)
         {
-            SaltLength = saltLength;
-            IterationCount = iterationCount;
-            KeyLength = keyLength;
+            _options = options;
         }
 
         private static byte[] GenerateKey(string password, byte[] salt, int iterationCount, int keyLength)
@@ -27,11 +30,11 @@ namespace SharedKernel.Identity.Security
 
         public string HashPassword(string password)
         {
-            var salt = new byte[SaltLength];
+            var salt = new byte[_options.SaltLength];
 
-            var key = GenerateKey(password, salt, IterationCount, KeyLength);
+            var key = GenerateKey(password, salt, _options.IterationCount, _options.KeyLength);
 
-            var hash = $"{Convert.ToBase64String(salt)}.{IterationCount}.{Convert.ToBase64String(key)}";
+            var hash = $"{Convert.ToBase64String(salt)}.{_options.IterationCount}.{Convert.ToBase64String(key)}";
 
             return hash;
         }
