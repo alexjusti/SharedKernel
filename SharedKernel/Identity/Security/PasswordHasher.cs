@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace SharedKernel.Identity.Security
 {
-    public class Pbkdf2Hasher : IPasswordHasher
+    public class PasswordHasher : IPasswordHasher
     {
         private int SaltLength { get; }
 
@@ -11,7 +11,7 @@ namespace SharedKernel.Identity.Security
 
         private int KeyLength { get; }
 
-        public Pbkdf2Hasher(int saltLength, int iterationCount, int keyLength)
+        public PasswordHasher(int saltLength, int iterationCount, int keyLength)
         {
             SaltLength = saltLength;
             IterationCount = iterationCount;
