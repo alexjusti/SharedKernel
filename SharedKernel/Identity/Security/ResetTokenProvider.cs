@@ -58,7 +58,11 @@ namespace SharedKernel.Identity.Security
             if (parts.Length != 2)
                 return false;
 
-            var parse = DateTime.TryParse(parts[0], null, DateTimeStyles.AssumeUniversal, out var expiration);
+            var parse = DateTime.TryParse(
+                parts[0],
+                null,
+                DateTimeStyles.AssumeUniversal,
+                out var expiration);
 
             if (!parse)
                 return false;

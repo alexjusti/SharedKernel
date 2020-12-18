@@ -23,7 +23,11 @@ namespace SharedKernel.Identity.Security
 
         private static byte[] GenerateKey(string password, byte[] salt, int iterationCount, int keyLength)
         {
-            var hasher = new Rfc2898DeriveBytes(password, salt, iterationCount, HashAlgorithmName.SHA512);
+            var hasher = new Rfc2898DeriveBytes(
+                password,
+                salt,
+                iterationCount,
+                HashAlgorithmName.SHA512);
 
             return hasher.GetBytes(keyLength);
         }
@@ -32,7 +36,11 @@ namespace SharedKernel.Identity.Security
         {
             var salt = new byte[_options.SaltLength];
 
-            var key = GenerateKey(password, salt, _options.IterationCount, _options.KeyLength);
+            var key = GenerateKey(
+                password,
+                salt,
+                _options.IterationCount,
+                _options.KeyLength);
 
             var hash = $"{Convert.ToBase64String(salt)}.{_options.IterationCount}.{Convert.ToBase64String(key)}";
 
@@ -52,7 +60,11 @@ namespace SharedKernel.Identity.Security
 
             var trueKey = Convert.FromBase64String(parts[2]);
 
-            var testKey = GenerateKey(passwordAttempt, salt, iterationCount, trueKey.Length);
+            var testKey = GenerateKey(
+                passwordAttempt,
+                salt,
+                iterationCount,
+                trueKey.Length);
 
             return trueKey.Equals(testKey);
         }
