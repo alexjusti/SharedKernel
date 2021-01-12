@@ -30,16 +30,19 @@ namespace SharedKernel.Identity
 
         public async Task<ActionResult<TUser>> AddUserAsync(TUser user)
         {
+            //Check if the email address is already taken
             var emailTaken = await _userRepository.ExistsAsync(u => u.Email == user.Email);
 
             if (emailTaken)
                 return (ActionResult<TUser>) ActionResult.ApplicationFailureResult(UserManagerErrors.EmailTaken);
-
+                
+            //Check if the username is already taken    
             var usernameTaken = await _userRepository.ExistsAsync(u => u.Username == user.Username);
 
             if (usernameTaken)
                 return (ActionResult<TUser>) ActionResult.ApplicationFailureResult(UserManagerErrors.UsernameTaken);
-
+            
+            //Hash the user's password and store it
             user.Password = _passwordHasher.HashPassword(user.Password);
 
             var add = await _userRepository.AddAsync(user);
@@ -126,13 +129,15 @@ namespace SharedKernel.Identity
             if (!getUser.Success)
                 return getUser;
 
+            //Check if the email is already taken
             var emailAlreadyExists =
                 await _userRepository.ExistsAsync(u =>
                     string.Equals(u.Email, dto.NewEmail, StringComparison.CurrentCultureIgnoreCase));
 
             if (emailAlreadyExists)
                 return ActionResult.ApplicationFailureResult(UserManagerErrors.EmailTaken);
-
+            
+            //Update the user's email and store it
             getUser.Result.Email = dto.NewEmail;
 
             return await UpdateUserAsync(getUser.Result);
@@ -144,14 +149,16 @@ namespace SharedKernel.Identity
 
             if (!getUser.Success)
                 return getUser;
-
+            
+            //Check if the username is already taken
             var usernameAlreadyExists =
                 await _userRepository.ExistsAsync(u =>
                     string.Equals(u.Username, dto.NewUsername, StringComparison.CurrentCultureIgnoreCase));
 
             if (usernameAlreadyExists)
                 return ActionResult.ApplicationFailureResult(UserManagerErrors.UsernameTaken);
-
+            
+            //Update the username and store it
             getUser.Result.Username = dto.NewUsername;
 
             return await UpdateUserAsync(getUser.Result);
@@ -163,12 +170,14 @@ namespace SharedKernel.Identity
 
             if (!getUser.Success)
                 return getUser;
-
+            
+            //Verify the user's current password
             var verifyPassword = VerifyUserPassword(getUser.Result, dto.CurrentPassword);
 
             if (!verifyPassword.Success)
                 return verifyPassword;
-
+            
+            //Hash the user's new password and store it
             getUser.Result.Password = _passwordHasher.HashPassword(dto.NewPassword);
 
             return await UpdateUserAsync(getUser.Result);
@@ -181,11 +190,14 @@ namespace SharedKernel.Identity
             //TODO: Investigate this
             if (!getUser.Success)
                 return getUser as ActionResult<string>;
-
+            
+            //Generate a plaintext reset token
             var resetToken = _resetTokenProvider.GenerateToken();
 
+            //Hash the reset token
             var resetTokenHash = _resetTokenProvider.GenerateHash(resetToken);
-
+            
+            //Store the hashed reset token
             getUser.Result.PasswordResetToken = resetTokenHash;
 
             var updateUser = await UpdateUserAsync(getUser.Result);
@@ -202,16 +214,19 @@ namespace SharedKernel.Identity
 
             if (!getUser.Success)
                 return getUser;
-
+            
+            //Verify the provided password reset token
             var verifyPasswordResetToken = _resetTokenProvider.VerifyHash(
                 getUser.Result.PasswordResetToken,
                 attemptPasswordResetDto.PasswordResetToken);
 
             if (!verifyPasswordResetToken)
                 return ActionResult.ApplicationFailureResult(UserManagerErrors.PasswordResetTokenInvalid);
-
+            
+            //Hash the user's new password
             var newPasswordHash = _passwordHasher.HashPassword(attemptPasswordResetDto.NewPassword);
 
+            //Store the updated password hash
             getUser.Result.Password = newPasswordHash;
 
             var updateUser = await UpdateUserAsync(getUser.Result);
@@ -225,7 +240,8 @@ namespace SharedKernel.Identity
 
             if (!getUser.Success)
                 return getUser;
-
+                
+            //Set the user's active status to false
             getUser.Result.IsActive = false;
 
             var updateUser = await UpdateUserAsync(getUser.Result);
