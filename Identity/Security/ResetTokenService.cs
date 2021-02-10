@@ -33,9 +33,7 @@ namespace SharedKernel.Identity.Security
 
             token = Encoding.ASCII.GetString(rawToken);
 
-            var hasherKey = Convert.FromBase64String(_settings.Secret);
-
-            using var hasher = new HMACSHA512(hasherKey);
+            using var hasher = new SHA512Managed();
             var hash = hasher.ComputeHash(rawToken);
 
             return Convert.ToBase64String(hash);
@@ -43,11 +41,9 @@ namespace SharedKernel.Identity.Security
 
         public bool VerifyResetToken(string attempt, string storedHash)
         {
-            var hasherKey = Convert.FromBase64String(_settings.Secret);
-
             var rawAttempt = Encoding.ASCII.GetBytes(attempt);
 
-            using var hasher = new HMACSHA512(hasherKey);
+            using var hasher = new SHA512Managed();
             var attemptHash = hasher.ComputeHash(rawAttempt);
 
             var rawStoredHash = Convert.FromBase64String(storedHash);

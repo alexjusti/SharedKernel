@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Entities;
 using SharedKernel.Identity.Entities;
+using SharedKernel.Identity.Errors;
 using SharedKernel.Identity.Security;
 using SharedKernel.Shared;
 
@@ -40,23 +41,38 @@ namespace SharedKernel.Identity.Services
 
         public async Task<Result<TUser>> GetUserByIdAsync(string id, CancellationToken cancellation = default)
         {
-            return await DB.Find<TUser>()
+            var user = await DB.Find<TUser>()
                 .OneAsync(id, cancellation);
+
+            if (user == null)
+                return Result.InputFailure(IdentityErrors.UserNotFound(id)) as Result<TUser>;
+
+            return user;
         }
 
         public async Task<Result<TUser>> GetUserByEmailAsync(string email, CancellationToken cancellation = default)
         {
-            return await DB.Find<TUser>()
+            var user = await DB.Find<TUser>()
                 .Match(u => u.Email == email)
                 .ExecuteFirstAsync(cancellation);
+
+            if (user == null)
+                return Result.InputFailure(IdentityErrors.UserNotFound(email)) as Result<TUser>;
+
+            return user;
         }
 
         public async Task<Result<TUser>> GetUserByUsernameAsync(string username,
             CancellationToken cancellation = default)
         {
-            return await DB.Find<TUser>()
+            var user = await DB.Find<TUser>()
                 .Match(u => u.Username == username)
                 .ExecuteFirstAsync(cancellation);
+
+            if (user == null)
+                return Result.InputFailure(IdentityErrors.UserNotFound(username)) as Result<TUser>;
+
+            return user;
         }
 
         public async Task<Result<TUser>> UpdateUserAsync(TUser user, CancellationToken cancellation = default)
@@ -71,6 +87,16 @@ namespace SharedKernel.Identity.Services
             await DB.DeleteAsync<TUser>(id, cancellation: cancellation);
 
             return Result.Ok();
+        }
+
+        private async Task<Result> VerifyPasswordAsync(TUser user, string password)
+        {
+            var verify = _passwordService.VerifyPassword(password, user.Password);
+
+            if (!verify)
+                return Result.InputFailure(IdentityErrors.InvalidPassword);
+
+            return await Task.FromResult(Result.Ok());
         }
     }
 }
