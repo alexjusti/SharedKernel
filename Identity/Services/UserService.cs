@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
-using MongoDB.Entities;
+﻿using MongoDB.Entities;
 using SharedKernel.Identity.Entities;
 using SharedKernel.Identity.Errors;
 using SharedKernel.Identity.Security;
 using SharedKernel.Shared;
+using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SharedKernel.Identity.Services
 {
@@ -70,9 +70,9 @@ namespace SharedKernel.Identity.Services
                 .ExecuteFirstAsync(cancellation);
 
             if (user == null)
-                return Result.InputFailure(IdentityErrors.UserNotFound(username)) as Result<TUser>;
+                return Result<TUser>.InputFailure(IdentityErrors.UserNotFound(username));
 
-            return user;
+            return Result<TUser>.Ok(user);
         }
 
         public async Task<Result<TUser>> UpdateUserAsync(TUser user, CancellationToken cancellation = default)

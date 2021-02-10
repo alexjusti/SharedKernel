@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using SharedKernel.Identity.Entities;
+using SharedKernel.Identity.Errors;
 using SharedKernel.Identity.Services;
 using SharedKernel.Shared;
 
@@ -31,12 +32,12 @@ namespace SharedKernel.Identity.Security
             var getUser = await _userService.GetUserByUsernameAsync(username, cancellation);
 
             if (!getUser.IsSuccess)
-                throw new Exception(); //TODO: Replace with error result
+                return Result<string>.InputFailure(IdentityErrors.UserNotFound(username));
 
             var verifyPassword = _passwordService.VerifyPassword(password, getUser.Response.Password);
 
             if (!verifyPassword)
-                throw new Exception(); //TODO: Replace with error result
+                return Result<string>.InputFailure(IdentityErrors.InvalidPassword);
 
             var claims = new[]
             {

@@ -16,7 +16,7 @@ namespace SharedKernel.Shared
 
         public static Result Ok()
         {
-            return new Result
+            return new()
             {
                 IsSuccess = true
             };
@@ -24,7 +24,7 @@ namespace SharedKernel.Shared
 
         private static Result ValidationFailure(ValidationError error)
         {
-            return new Result
+            return new()
             {
                 IsSuccess = false,
                 ValidationErrors = new[] { error }
@@ -33,7 +33,7 @@ namespace SharedKernel.Shared
 
         public static Result FromValidationResult(ValidationResult validationResult)
         {
-            return new Result
+            return new()
             {
                 IsSuccess = false,
                 ValidationErrors = validationResult.Errors.Select(f => new ValidationError
@@ -46,7 +46,7 @@ namespace SharedKernel.Shared
 
         public static Result InputFailure(IEnumerable<Error> inputErrors)
         {
-            return new Result
+            return new()
             {
                 IsSuccess = false,
                 InputErrors = inputErrors
@@ -60,7 +60,7 @@ namespace SharedKernel.Shared
 
         public static Result ApplicationFailure(IEnumerable<Error> applicationErrors)
         {
-            return new Result
+            return new()
             {
                 IsSuccess = false,
                 ApplicationErrors = applicationErrors
@@ -82,13 +82,54 @@ namespace SharedKernel.Shared
             return Ok(response);
         }
 
-        private static Result<T> Ok(T response)
+        public static Result<T> Ok(T response)
         {
-            return new Result<T>
+            return new()
             {
                 IsSuccess = true,
                 Response = response
             };
+        }
+
+        public new static Result<T> FromValidationResult(ValidationResult validationResult)
+        {
+            return new()
+            {
+                IsSuccess = false,
+                ValidationErrors = validationResult.Errors.Select(f => new ValidationError
+                {
+                    Property = f.PropertyName,
+                    Message = f.ErrorMessage
+                })
+            };
+        }
+
+        public new static Result<T> InputFailure(IEnumerable<Error> inputErrors)
+        {
+            return new()
+            {
+                IsSuccess = false,
+                InputErrors = inputErrors
+            };
+        }
+
+        public new static Result<T> InputFailure(Error inputError)
+        {
+            return InputFailure(new[] { inputError });
+        }
+
+        public new static Result<T> ApplicationFailure(IEnumerable<Error> applicationErrors)
+        {
+            return new()
+            {
+                IsSuccess = false,
+                ApplicationErrors = applicationErrors
+            };
+        }
+
+        public new static Result<T> ApplicationFailure(Error applicationError)
+        {
+            return ApplicationFailure(new[] { applicationError });
         }
     }
 
