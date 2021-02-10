@@ -10,7 +10,9 @@ namespace SharedKernel.Shared
 
         public IEnumerable<ValidationError> ValidationErrors { get; set; }
 
-        public IEnumerable<ApplicationError> ApplicationErrors { get; set; }
+        public IEnumerable<Error> InputErrors { get; set; }
+
+        public IEnumerable<Error> ApplicationErrors { get; set; }
 
         public static Result Ok()
         {
@@ -42,7 +44,16 @@ namespace SharedKernel.Shared
             };
         }
 
-        public static Result ApplicationFailure(IEnumerable<ApplicationError> applicationErrors)
+        public static Result InputFailure(IEnumerable<Error> inputErrors)
+        {
+            return new Result
+            {
+                IsSuccess = false,
+                InputErrors = inputErrors
+            };
+        }
+
+        public static Result ApplicationFailure(IEnumerable<Error> applicationErrors)
         {
             return new Result
             {
@@ -51,7 +62,7 @@ namespace SharedKernel.Shared
             };
         }
 
-        public static Result ApplicationFailure(ApplicationError applicationError)
+        public static Result ApplicationFailure(Error applicationError)
         {
             return ApplicationFailure(new[] { applicationError });
         }
@@ -83,7 +94,7 @@ namespace SharedKernel.Shared
         public string Message { get; set; }
     }
 
-    public class ApplicationError
+    public class Error
     {
         public string Code { get; set; }
 
