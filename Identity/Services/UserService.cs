@@ -57,7 +57,7 @@ namespace SharedKernel.Identity.Services
                 .ExecuteFirstAsync(cancellation);
 
             if (user == null)
-                return Result.InputFailure(IdentityErrors.UserNotFound(email)) as Result<TUser>;
+                return Result<TUser>.InputFailure(IdentityErrors.UserNotFound(email));
 
             return user;
         }
