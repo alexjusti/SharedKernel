@@ -22,7 +22,7 @@ namespace SharedKernel.Shared
             };
         }
 
-        public static Result ValidationFailure(ValidationError error)
+        private static Result ValidationFailure(ValidationError error)
         {
             return new Result
             {
@@ -51,6 +51,11 @@ namespace SharedKernel.Shared
                 IsSuccess = false,
                 InputErrors = inputErrors
             };
+        }
+
+        public static Result InputFailure(Error inputError)
+        {
+            return InputFailure(new[] {inputError});
         }
 
         public static Result ApplicationFailure(IEnumerable<Error> applicationErrors)
