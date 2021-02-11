@@ -54,7 +54,10 @@ namespace SharedKernel.Identity.Security
                 expires: DateTime.UtcNow.AddMinutes(_settings.DurationMinutes),
                 signingCredentials: credentials);
 
-            return token.ToString();
+            var encodedToken = new JwtSecurityTokenHandler()
+                .WriteToken(token);
+
+            return Result<string>.Ok(encodedToken);
         }
 
         public async Task<Result<string>> RefreshAsync(string oldToken, CancellationToken cancellation = default)
