@@ -29,14 +29,16 @@ namespace SharedKernel.Identity.Services
 
             await user.SaveAsync(cancellation: cancellation);
 
-            return user;
+            return Result<TUser>.Ok(user);
         }
 
         public async Task<Result<IEnumerable<TUser>>> GetUsersAsync(Expression<Func<TUser, bool>> expression,
             CancellationToken cancellation = default)
         {
-            return await DB.Find<TUser>()
+            var users = await DB.Find<TUser>()
                 .ManyAsync(expression, cancellation);
+
+            return Result<IEnumerable<TUser>>.Ok(users);
         }
 
         public async Task<Result<TUser>> GetUserByIdAsync(string id, CancellationToken cancellation = default)
@@ -47,7 +49,7 @@ namespace SharedKernel.Identity.Services
             if (user == null)
                 return Result.InputFailure(IdentityErrors.UserNotFound(id)) as Result<TUser>;
 
-            return user;
+            return Result<TUser>.Ok(user);
         }
 
         public async Task<Result<TUser>> GetUserByEmailAsync(string email, CancellationToken cancellation = default)
@@ -59,7 +61,7 @@ namespace SharedKernel.Identity.Services
             if (user == null)
                 return Result<TUser>.InputFailure(IdentityErrors.UserNotFound(email));
 
-            return user;
+            return Result<TUser>.Ok(user);
         }
 
         public async Task<Result<TUser>> GetUserByUsernameAsync(string username,
@@ -79,7 +81,7 @@ namespace SharedKernel.Identity.Services
         {
             await user.SaveAsync(cancellation: cancellation);
 
-            return user;
+            return Result<TUser>.Ok(user);
         }
 
         public async Task<Result> DeleteUserAsync(string id, CancellationToken cancellation = default)

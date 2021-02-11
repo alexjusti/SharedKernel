@@ -77,11 +77,6 @@ namespace SharedKernel.Shared
     {
         public T Response { get; set; }
 
-        public static implicit operator Result<T>(T response)
-        {
-            return Ok(response);
-        }
-
         public static Result<T> Ok(T response)
         {
             return new()
